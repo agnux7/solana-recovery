@@ -7,11 +7,11 @@ Recuperación de tokens SPL/Token-2022 desde una wallet comprometida con sweeper
 ## El Problema
 
 ### Situación inicial
-- Wallet comprometida: `2ZQL2EMi5zbma5sM9ys7jNpDoXaLjwwb669JmSQJuXj8`
+- Wallet comprometida: `<COMPROMISED_WALLET>`
 - Causa: clic en enlace de phishing → firma de transacción maliciosa
 - El atacante instaló un **sweeper bot**: un script que monitorea la wallet comprometida 24/7 y drena cualquier SOL que llegue en cuestión de segundos, antes de que pueda usarse para pagar fees
 - Contenido a rescatar: 103 tokens meme (~$300 USD)
-- Destino: nueva wallet limpia `EXGbi2D6ZR7WawrnNRcUZ7gaboYRnMsL3xB7JHYSdSNn`
+- Destino: nueva wallet limpia `<DESTINATION_WALLET>`
 
 ### Por qué no funcionaron las soluciones obvias
 
