@@ -1,0 +1,4 @@
+node_modules/
+recover.js
+*.key
+.env
