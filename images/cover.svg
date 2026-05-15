@@ -1,152 +1,116 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 480" width="1200" height="480">
   <defs>
     <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" style="stop-color:#070714"/>
-      <stop offset="60%" style="stop-color:#0D0820"/>
-      <stop offset="100%" style="stop-color:#060D14"/>
+      <stop offset="0%" style="stop-color:#060610"/>
+      <stop offset="100%" style="stop-color:#08080E"/>
     </linearGradient>
-    <linearGradient id="solGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+    <linearGradient id="sol" x1="0%" y1="0%" x2="100%" y2="0%">
       <stop offset="0%" style="stop-color:#9945FF"/>
       <stop offset="100%" style="stop-color:#14F195"/>
     </linearGradient>
-    <linearGradient id="redGrad" x1="0%" y1="0%" x2="100%" y2="0%">
-      <stop offset="0%" style="stop-color:#FF1744"/>
-      <stop offset="100%" style="stop-color:#FF6B00"/>
-    </linearGradient>
-    <linearGradient id="leftFade" x1="0%" y1="0%" x2="100%" y2="0%">
-      <stop offset="0%" style="stop-color:#FF1744;stop-opacity:0.18"/>
+    <linearGradient id="redGlow" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#FF1744;stop-opacity:0.35"/>
       <stop offset="100%" style="stop-color:#FF1744;stop-opacity:0"/>
     </linearGradient>
-    <linearGradient id="rightFade" x1="0%" y1="0%" x2="100%" y2="0%">
+    <linearGradient id="greenGlow" x1="0%" y1="0%" x2="100%" y2="0%">
       <stop offset="0%" style="stop-color:#14F195;stop-opacity:0"/>
-      <stop offset="100%" style="stop-color:#14F195;stop-opacity:0.14"/>
+      <stop offset="100%" style="stop-color:#14F195;stop-opacity:0.3"/>
     </linearGradient>
-    <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
-      <feGaussianBlur stdDeviation="6" result="coloredBlur"/>
-      <feMerge><feMergeNode in="coloredBlur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="10" result="blur"/>
+      <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
     </filter>
-    <filter id="bigglow" x="-40%" y="-40%" width="180%" height="180%">
-      <feGaussianBlur stdDeviation="18" result="coloredBlur"/>
-      <feMerge><feMergeNode in="coloredBlur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    <filter id="softglow">
+      <feGaussianBlur stdDeviation="28" result="blur"/>
+      <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
     </filter>
-    <filter id="textglow" x="-10%" y="-30%" width="120%" height="160%">
-      <feGaussianBlur stdDeviation="8" result="coloredBlur"/>
-      <feMerge><feMergeNode in="coloredBlur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    <filter id="numglow">
+      <feGaussianBlur stdDeviation="16" result="blur"/>
+      <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
     </filter>
-    <clipPath id="clip">
-      <rect width="1200" height="480"/>
-    </clipPath>
+    <clipPath id="bounds"><rect width="1200" height="480"/></clipPath>
   </defs>
 
-  <g clip-path="url(#clip)">
-    <!-- Base background -->
+  <g clip-path="url(#bounds)">
     <rect width="1200" height="480" fill="url(#bg)"/>
 
-    <!-- Side glows -->
-    <rect x="0" y="0" width="420" height="480" fill="url(#leftFade)"/>
-    <rect x="780" y="0" width="420" height="480" fill="url(#rightFade)"/>
+    <!-- Side color washes -->
+    <rect x="0" y="0" width="500" height="480" fill="url(#redGlow)"/>
+    <rect x="700" y="0" width="500" height="480" fill="url(#greenGlow)"/>
 
-    <!-- Subtle grid -->
-    <g opacity="0.04" stroke="#9945FF" stroke-width="1">
-      <line x1="0" y1="96" x2="1200" y2="96"/>
-      <line x1="0" y1="192" x2="1200" y2="192"/>
-      <line x1="0" y1="288" x2="1200" y2="288"/>
-      <line x1="0" y1="384" x2="1200" y2="384"/>
-      <line x1="240" y1="0" x2="240" y2="480"/>
-      <line x1="480" y1="0" x2="480" y2="480"/>
-      <line x1="720" y1="0" x2="720" y2="480"/>
-      <line x1="960" y1="0" x2="960" y2="480"/>
+    <!-- Ambient blobs -->
+    <circle cx="160" cy="240" r="220" fill="#FF1744" opacity="0.07" filter="url(#softglow)"/>
+    <circle cx="1040" cy="240" r="220" fill="#14F195" opacity="0.07" filter="url(#softglow)"/>
+
+    <!-- Top/bottom accent bars -->
+    <rect x="0" y="0" width="1200" height="3" fill="url(#sol)"/>
+    <rect x="0" y="477" width="1200" height="3" fill="url(#sol)"/>
+
+    <!-- ── LEFT: broken wallet ── -->
+    <g transform="translate(175, 210)" filter="url(#glow)">
+      <!-- Wallet body -->
+      <rect x="-70" y="-52" width="140" height="104" rx="16" fill="#180409" stroke="#FF1744" stroke-width="3"/>
+      <!-- Crack lines -->
+      <path d="M 0 -52 L -8 -20 L 10 0 L -4 52" stroke="#FF1744" stroke-width="2" fill="none" opacity="0.7"/>
+      <!-- Lock broken -->
+      <path d="M -14 -8 L -14 -22 Q 0 -36 14 -22" stroke="#FF1744" stroke-width="3" fill="none" stroke-linecap="round" opacity="0.8"/>
+      <path d="M -14 -8 L -14 -16 Q -4 -20 0 -16" stroke="#FF1744" stroke-width="2" fill="none" stroke-linecap="round" opacity="0.5"/>
+      <rect x="-16" y="-8" width="32" height="24" rx="4" fill="#FF1744" opacity="0.8"/>
+      <circle cx="0" cy="4" r="5" fill="#180409"/>
     </g>
+    <!-- Skull -->
+    <text x="175" y="310" text-anchor="middle" font-size="38">💀</text>
 
-    <!-- Background ambient circles -->
-    <circle cx="200" cy="240" r="180" fill="#FF1744" opacity="0.05" filter="url(#bigglow)"/>
-    <circle cx="1000" cy="240" r="180" fill="#14F195" opacity="0.05" filter="url(#bigglow)"/>
-    <circle cx="600" cy="240" r="120" fill="#9945FF" opacity="0.04" filter="url(#bigglow)"/>
-
-    <!-- Top accent line -->
-    <rect x="0" y="0" width="1200" height="3" fill="url(#solGrad)"/>
-
-    <!-- ══ LEFT BLOCK: HACKED ══ -->
-    <!-- Large faded HACKED text background -->
-    <text x="60" y="320" font-family="'Arial Black', monospace" font-size="200" font-weight="900"
-          fill="#FF1744" opacity="0.04" letter-spacing="-8">HACKED</text>
-
-    <!-- Wallet icon (compromised) -->
-    <g transform="translate(110, 170)" filter="url(#glow)">
-      <rect x="-44" y="-34" width="88" height="68" rx="10" fill="#1A0508" stroke="#FF1744" stroke-width="2.5"/>
-      <rect x="-32" y="-22" width="64" height="44" rx="6" fill="#260810" stroke="#FF1744" stroke-width="1" opacity="0.6"/>
-      <path d="M -12 -8 L -12 -20 Q 0 -30 12 -20 L 12 -8" fill="none" stroke="#FF1744" stroke-width="2.5"/>
-      <rect x="-12" y="-8 " width="24" height="18" rx="3" fill="#FF1744" opacity="0.85"/>
-      <circle cx="0" cy="2" r="4" fill="#1A0508"/>
+    <!-- ── RIGHT: clean wallet ── -->
+    <g transform="translate(1025, 210)" filter="url(#glow)">
+      <rect x="-70" y="-52" width="140" height="104" rx="16" fill="#041809" stroke="#14F195" stroke-width="3"/>
+      <circle cx="0" cy="-8" r="26" fill="#14F195" opacity="0.12"/>
+      <path d="M -14 -8 L -4 6 L 18 -18" stroke="#14F195" stroke-width="4" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
     </g>
+    <!-- Check -->
+    <text x="1025" y="310" text-anchor="middle" font-size="38">✅</text>
 
-    <!-- Compromised label -->
-    <text x="110" y="250" text-anchor="middle" font-family="monospace" font-size="11" fill="#FF4444" opacity="0.8" letter-spacing="3">COMPROMISED WALLET</text>
+    <!-- ── CENTER: big number ── -->
+    <text x="600" y="230" text-anchor="middle"
+          font-family="'Arial Black', Arial, sans-serif"
+          font-size="180" font-weight="900"
+          fill="url(#sol)" opacity="0.12"
+          letter-spacing="-6">103</text>
 
-    <!-- Skull / danger indicator -->
-    <text x="110" y="290" text-anchor="middle" font-family="monospace" font-size="28">☠️</text>
+    <text x="600" y="228" text-anchor="middle"
+          font-family="'Arial Black', Arial, sans-serif"
+          font-size="180" font-weight="900"
+          fill="url(#sol)"
+          filter="url(#numglow)"
+          letter-spacing="-6">103</text>
 
-    <!-- ══ CENTER DIVIDER WITH FLOW ══ -->
-    <!-- Token flow arrow -->
-    <g filter="url(#glow)">
-      <!-- Arrow path -->
-      <path d="M 185 210 Q 600 150 1015 210" stroke="url(#solGrad)" stroke-width="3.5" fill="none" stroke-linecap="round"/>
-      <!-- Arrowhead -->
-      <polygon points="1020,210 1003,200 1003,220" fill="#14F195"/>
-    </g>
+    <!-- Tokens label under number -->
+    <text x="600" y="272" text-anchor="middle"
+          font-family="monospace" font-size="18"
+          fill="#FFFFFF" opacity="0.45"
+          letter-spacing="10">TOKENS</text>
 
-    <!-- Flowing token dots -->
-    <circle cx="320" cy="190" r="6" fill="#9945FF" opacity="0.95" filter="url(#glow)"/>
-    <circle cx="420" cy="176" r="5" fill="#AA55FF" opacity="0.9" filter="url(#glow)"/>
-    <circle cx="520" cy="168" r="7" fill="#BB66FF" opacity="0.9" filter="url(#glow)"/>
-    <circle cx="620" cy="165" r="5" fill="#CC77FF" opacity="0.85" filter="url(#glow)"/>
-    <circle cx="720" cy="168" r="6" fill="#AAEEDD" opacity="0.9" filter="url(#glow)"/>
-    <circle cx="820" cy="176" r="5" fill="#44EEBB" opacity="0.9" filter="url(#glow)"/>
-    <circle cx="920" cy="189" r="7" fill="#14F195" opacity="0.95" filter="url(#glow)"/>
+    <!-- Arrow left side -->
+    <line x1="290" y1="215" x2="460" y2="215" stroke="#FF1744" stroke-width="2" opacity="0.4" stroke-dasharray="6,4"/>
 
-    <!-- "103 tokens" label on arrow -->
-    <rect x="520" y="138" width="160" height="26" rx="6" fill="#0D0820" stroke="#9945FF" stroke-width="1" opacity="0.9"/>
-    <text x="600" y="156" text-anchor="middle" font-family="monospace" font-size="13" fill="#BB77FF" font-weight="bold">103 tokens escaped</text>
+    <!-- Arrow right side -->
+    <line x1="740" y1="215" x2="910" y2="215" stroke="#14F195" stroke-width="2" opacity="0.4" stroke-dasharray="6,4"/>
+    <polygon points="912,215 898,208 898,222" fill="#14F195" opacity="0.5"/>
 
-    <!-- Bot blocked indicator -->
-    <g transform="translate(600, 320)">
-      <rect x="-110" y="-22" width="220" height="44" rx="8" fill="#1A0808" stroke="#FF4444" stroke-width="1.5" opacity="0.9"/>
-      <text x="0" y="-3" text-anchor="middle" font-family="monospace" font-size="12" fill="#FF6666">🤖 sweeper bot watched</text>
-      <text x="0" y="14" text-anchor="middle" font-family="monospace" font-size="13" font-weight="bold" fill="#FF4444">0 SOL arrived. Bot got nothing.</text>
-    </g>
-
-    <!-- ══ RIGHT BLOCK: SAFE ══ -->
-    <!-- Large faded SAFE text background -->
-    <text x="800" y="320" font-family="'Arial Black', monospace" font-size="200" font-weight="900"
-          fill="#14F195" opacity="0.04" letter-spacing="-8">SAFE</text>
-
-    <!-- Wallet icon (safe) -->
-    <g transform="translate(1090, 170)" filter="url(#glow)">
-      <rect x="-44" y="-34" width="88" height="68" rx="10" fill="#051A0D" stroke="#14F195" stroke-width="2.5"/>
-      <rect x="-32" y="-22" width="64" height="44" rx="6" fill="#082A14" stroke="#14F195" stroke-width="1" opacity="0.6"/>
-      <circle cx="0" cy="-4" r="16" fill="#14F195" opacity="0.15"/>
-      <path d="M -10 -4 L -3 5 L 13 -13" stroke="#14F195" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-    </g>
-
-    <!-- Safe label -->
-    <text x="1090" y="250" text-anchor="middle" font-family="monospace" font-size="11" fill="#14F195" opacity="0.8" letter-spacing="3">DESTINATION WALLET</text>
-
-    <!-- Check mark -->
-    <text x="1090" y="290" text-anchor="middle" font-family="monospace" font-size="28">✅</text>
-
-    <!-- ══ MAIN HEADLINE ══ -->
-    <text x="600" y="390" text-anchor="middle"
-          font-family="'Arial Black', Arial, monospace" font-size="42" font-weight="900"
-          fill="url(#solGrad)" filter="url(#textglow)" letter-spacing="-1">
-      I Got Hacked. I Got My Tokens Back.
+    <!-- ── BOTTOM HEADLINE ── -->
+    <text x="600" y="390"
+          text-anchor="middle"
+          font-family="'Arial Black', Arial, sans-serif"
+          font-size="44" font-weight="900"
+          fill="#FFFFFF">
+      My wallet got drained.
     </text>
-
-    <!-- Subtitle -->
-    <text x="600" y="428" text-anchor="middle" font-family="monospace" font-size="16" fill="#AAAAAA" letter-spacing="1">
-      Defeating a Solana sweeper bot without sending a single SOL to the compromised wallet
+    <text x="600" y="442"
+          text-anchor="middle"
+          font-family="'Arial Black', Arial, sans-serif"
+          font-size="44" font-weight="900"
+          fill="url(#sol)" filter="url(#glow)">
+      I still got everything back.
     </text>
-
-    <!-- Bottom accent line -->
-    <rect x="0" y="477" width="1200" height="3" fill="url(#solGrad)"/>
   </g>
 </svg>
