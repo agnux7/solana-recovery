@@ -1,0 +1,141 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 700" width="1000" height="700">
+  <defs>
+    <linearGradient id="infoBg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#09091A"/>
+      <stop offset="100%" style="stop-color:#0F0F28"/>
+    </linearGradient>
+    <linearGradient id="solGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#9945FF"/>
+      <stop offset="100%" style="stop-color:#14F195"/>
+    </linearGradient>
+    <linearGradient id="bar1" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#9945FF"/>
+      <stop offset="100%" style="stop-color:#BB77FF"/>
+    </linearGradient>
+    <linearGradient id="bar2" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#14F195"/>
+      <stop offset="100%" style="stop-color:#0099AA"/>
+    </linearGradient>
+    <filter id="ig">
+      <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+      <feMerge><feMergeNode in="coloredBlur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+
+  <rect width="1000" height="700" fill="url(#infoBg)"/>
+
+  <!-- Header bar -->
+  <rect x="0" y="0" width="1000" height="80" fill="#0D0D1F"/>
+  <rect x="0" y="76" width="1000" height="4" fill="url(#solGrad)"/>
+  <text x="500" y="34" text-anchor="middle" font-family="monospace" font-size="24" font-weight="bold" fill="#FFFFFF">How to Recover Tokens from a Compromised Solana Wallet</text>
+  <text x="500" y="60" text-anchor="middle" font-family="monospace" font-size="13" fill="#888">Defeating the sweeper bot with the funder-pays-fees pattern</text>
+
+  <!-- ══ STEPS SECTION ══ -->
+  <text x="50" y="120" font-family="monospace" font-size="14" font-weight="bold" fill="#9945FF">STEP-BY-STEP</text>
+  <line x1="50" y1="128" x2="480" y2="128" stroke="#9945FF" stroke-width="1" opacity="0.4"/>
+
+  <!-- Step 1 -->
+  <circle cx="75" cy="165" r="20" fill="#9945FF" opacity="0.2" stroke="#9945FF" stroke-width="2"/>
+  <text x="75" y="171" text-anchor="middle" font-family="monospace" font-size="16" font-weight="bold" fill="#9945FF">1</text>
+  <text x="108" y="158" font-family="monospace" font-size="14" font-weight="bold" fill="#FFFFFF">Get the private keys</text>
+  <text x="108" y="175" font-family="monospace" font-size="12" fill="#888">Export from Phantom: Settings → Security → Export Private Key</text>
+  <text x="108" y="191" font-family="monospace" font-size="12" fill="#888">You need: compromised wallet key + funder wallet key</text>
+
+  <!-- Step 2 -->
+  <circle cx="75" cy="235" r="20" fill="#9945FF" opacity="0.2" stroke="#9945FF" stroke-width="2"/>
+  <text x="75" y="241" text-anchor="middle" font-family="monospace" font-size="16" font-weight="bold" fill="#9945FF">2</text>
+  <text x="108" y="228" font-family="monospace" font-size="14" font-weight="bold" fill="#FFFFFF">Fund the funder wallet</text>
+  <text x="108" y="245" font-family="monospace" font-size="12" fill="#888">Send SOL to a CLEAN wallet (not the compromised one)</text>
+  <text x="108" y="261" font-family="monospace" font-size="12" fill="#14F195">≈ 0.003 SOL × number of tokens  (add 20% buffer)</text>
+
+  <!-- Step 3 -->
+  <circle cx="75" cy="305" r="20" fill="#9945FF" opacity="0.2" stroke="#9945FF" stroke-width="2"/>
+  <text x="75" y="311" text-anchor="middle" font-family="monospace" font-size="16" font-weight="bold" fill="#9945FF">3</text>
+  <text x="108" y="298" font-family="monospace" font-size="14" font-weight="bold" fill="#FFFFFF">Configure the script</text>
+  <text x="108" y="315" font-family="monospace" font-size="12" fill="#888">Set compromisedKey, funderKey, destination</text>
+  <text x="108" y="331" font-family="monospace" font-size="12" fill="#888">Start with dryRun: true to verify wallet addresses</text>
+
+  <!-- Step 4 -->
+  <circle cx="75" cy="375" r="20" fill="#9945FF" opacity="0.2" stroke="#9945FF" stroke-width="2"/>
+  <text x="75" y="381" text-anchor="middle" font-family="monospace" font-size="16" font-weight="bold" fill="#9945FF">4</text>
+  <text x="108" y="368" font-family="monospace" font-size="14" font-weight="bold" fill="#FFFFFF">Execute (dryRun: false)</text>
+  <text x="108" y="385" font-family="monospace" font-size="12" fill="#888">Script batches 4 tokens/tx, both wallets sign each batch</text>
+  <text x="108" y="401" font-family="monospace" font-size="12" fill="#888">If funder runs dry → recharge → re-run (idempotent)</text>
+
+  <!-- Step 5 -->
+  <circle cx="75" cy="445" r="20" fill="#14F195" opacity="0.2" stroke="#14F195" stroke-width="2"/>
+  <text x="75" y="451" text-anchor="middle" font-family="monospace" font-size="16" font-weight="bold" fill="#14F195">5</text>
+  <text x="108" y="438" font-family="monospace" font-size="14" font-weight="bold" fill="#FFFFFF">Delete the script</text>
+  <text x="108" y="455" font-family="monospace" font-size="12" fill="#FF8800">rm recover.js  ← contains private keys, delete immediately</text>
+  <text x="108" y="471" font-family="monospace" font-size="12" fill="#888">Never commit it to git. Never share it.</text>
+
+  <!-- Step connector line -->
+  <line x1="75" y1="186" x2="75" y2="212" stroke="#9945FF" stroke-width="1.5" stroke-dasharray="4,3" opacity="0.5"/>
+  <line x1="75" y1="256" x2="75" y2="282" stroke="#9945FF" stroke-width="1.5" stroke-dasharray="4,3" opacity="0.5"/>
+  <line x1="75" y1="326" x2="75" y2="352" stroke="#9945FF" stroke-width="1.5" stroke-dasharray="4,3" opacity="0.5"/>
+  <line x1="75" y1="396" x2="75" y2="422" stroke="#9945FF" stroke-width="1.5" stroke-dasharray="4,3" opacity="0.5"/>
+
+  <!-- Vertical divider -->
+  <line x1="510" y1="90" x2="510" y2="650" stroke="#222" stroke-width="1.5"/>
+
+  <!-- ══ RIGHT: COST BREAKDOWN ══ -->
+  <text x="540" y="120" font-family="monospace" font-size="14" font-weight="bold" fill="#14F195">COST BREAKDOWN</text>
+  <line x1="540" y1="128" x2="960" y2="128" stroke="#14F195" stroke-width="1" opacity="0.4"/>
+
+  <!-- Cost items -->
+  <text x="540" y="158" font-family="monospace" font-size="12" fill="#888">ATA creation (per token)</text>
+  <rect x="540" y="165" width="290" height="18" rx="4" fill="url(#bar1)" opacity="0.8"/>
+  <text x="840" y="179" font-family="monospace" font-size="12" fill="#BB77FF">~0.00204 SOL</text>
+
+  <text x="540" y="208" font-family="monospace" font-size="12" fill="#888">Priority fee (per tx of 4 tokens)</text>
+  <rect x="540" y="215" width="150" height="18" rx="4" fill="url(#bar1)" opacity="0.6"/>
+  <text x="700" y="229" font-family="monospace" font-size="12" fill="#9945FF">~0.001 SOL</text>
+
+  <text x="540" y="258" font-family="monospace" font-size="12" fill="#888">Base fee (per tx)</text>
+  <rect x="540" y="265" width="30" height="18" rx="4" fill="#9945FF" opacity="0.5"/>
+  <text x="580" y="279" font-family="monospace" font-size="12" fill="#666">~0.000005 SOL</text>
+
+  <!-- Total per batch -->
+  <rect x="540" y="298" width="420" height="48" rx="8" fill="#0D0D2A" stroke="#9945FF" stroke-width="1.5"/>
+  <text x="560" y="319" font-family="monospace" font-size="13" fill="#888">Total per 4-token batch:</text>
+  <text x="730" y="319" font-family="monospace" font-size="14" font-weight="bold" fill="#9945FF">~0.01 SOL</text>
+  <text x="560" y="337" font-family="monospace" font-size="12" fill="#666">4 × 0.00204 + fees ≈ 0.009–0.011 SOL</text>
+
+  <!-- Scale reference -->
+  <text x="540" y="378" font-family="monospace" font-size="13" font-weight="bold" fill="#FFFFFF">Estimate by token count</text>
+
+  <text x="540" y="403" font-family="monospace" font-size="12" fill="#888">10 tokens</text>
+  <rect x="650" y="393" width="60" height="14" rx="3" fill="url(#bar2)" opacity="0.7"/>
+  <text x="720" y="405" font-family="monospace" font-size="12" fill="#14F195">~0.03 SOL</text>
+
+  <text x="540" y="428" font-family="monospace" font-size="12" fill="#888">25 tokens</text>
+  <rect x="650" y="418" width="100" height="14" rx="3" fill="url(#bar2)" opacity="0.7"/>
+  <text x="760" y="430" font-family="monospace" font-size="12" fill="#14F195">~0.07 SOL</text>
+
+  <text x="540" y="453" font-family="monospace" font-size="12" fill="#888">50 tokens</text>
+  <rect x="650" y="443" width="180" height="14" rx="3" fill="url(#bar2)" opacity="0.7"/>
+  <text x="840" y="455" font-family="monospace" font-size="12" fill="#14F195">~0.13 SOL</text>
+
+  <text x="540" y="478" font-family="monospace" font-size="12" fill="#888">100 tokens</text>
+  <rect x="650" y="468" width="300" height="14" rx="3" fill="url(#bar2)" opacity="0.7"/>
+  <text x="960" y="480" font-family="monospace" font-size="12" fill="#14F195">~0.26 SOL</text>
+
+  <!-- Stats box -->
+  <rect x="540" y="510" width="420" height="100" rx="10" fill="#0A1A0A" stroke="#14F195" stroke-width="1.5"/>
+  <text x="750" y="534" text-anchor="middle" font-family="monospace" font-size="13" font-weight="bold" fill="#14F195">THIS RUN</text>
+  <line x1="560" y1="540" x2="940" y2="540" stroke="#14F195" stroke-width="1" opacity="0.3"/>
+
+  <text x="570" y="562" font-family="monospace" font-size="13" fill="#888">Tokens recovered</text>
+  <text x="900" y="562" text-anchor="end" font-family="monospace" font-size="14" font-weight="bold" fill="#14F195">103 / 103</text>
+
+  <text x="570" y="582" font-family="monospace" font-size="13" fill="#888">SOL spent total</text>
+  <text x="900" y="582" text-anchor="end" font-family="monospace" font-size="14" font-weight="bold" fill="#9945FF">~0.40 SOL</text>
+
+  <text x="570" y="602" font-family="monospace" font-size="13" fill="#888">SOL stolen by bot</text>
+  <text x="900" y="602" text-anchor="end" font-family="monospace" font-size="14" font-weight="bold" fill="#FF4444">0 SOL</text>
+
+  <!-- Footer -->
+  <rect x="0" y="654" width="1000" height="46" fill="#0D0D1F"/>
+  <line x1="0" y1="654" x2="1000" y2="654" stroke="url(#solGrad)" stroke-width="2"/>
+  <text x="500" y="682" text-anchor="middle" font-family="monospace" font-size="12" fill="#555">github.com/agnux7/solana-recovery  ·  Full script + guide</text>
+</svg>

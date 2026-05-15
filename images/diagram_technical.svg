@@ -1,0 +1,121 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 580" width="1200" height="580">
+  <defs>
+    <linearGradient id="bg2" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#0A0A1A"/>
+      <stop offset="100%" style="stop-color:#0F0F2A"/>
+    </linearGradient>
+    <linearGradient id="sol" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#9945FF"/>
+      <stop offset="100%" style="stop-color:#14F195"/>
+    </linearGradient>
+    <filter id="g2">
+      <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+      <feMerge><feMergeNode in="coloredBlur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <marker id="arrowGreen" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#14F195"/>
+    </marker>
+    <marker id="arrowRed" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#FF4444"/>
+    </marker>
+    <marker id="arrowPurple" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#9945FF"/>
+    </marker>
+    <marker id="arrowGray" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#555"/>
+    </marker>
+  </defs>
+
+  <rect width="1200" height="580" fill="url(#bg2)"/>
+
+  <!-- Title -->
+  <text x="600" y="46" text-anchor="middle" font-family="monospace" font-size="22" font-weight="bold" fill="#FFFFFF">Transaction Architecture: Funder-Pays-Fees Pattern</text>
+  <line x1="100" y1="58" x2="1100" y2="58" stroke="#9945FF" stroke-width="1" opacity="0.3"/>
+
+  <!-- ══ LEFT PANEL: WITHOUT funder (bad) ══ -->
+  <rect x="30" y="75" width="520" height="460" rx="12" fill="#1A0A0A" stroke="#FF4444" stroke-width="1.5" opacity="0.7"/>
+  <rect x="30" y="75" width="520" height="40" rx="12" fill="#FF4444" opacity="0.15"/>
+  <text x="290" y="101" text-anchor="middle" font-family="monospace" font-size="15" font-weight="bold" fill="#FF6666">❌  WITHOUT THIS PATTERN</text>
+
+  <!-- Bad flow nodes -->
+  <!-- Node: Send SOL -->
+  <rect x="170" y="140" width="240" height="50" rx="8" fill="#2A0A0A" stroke="#FF4444" stroke-width="1.5"/>
+  <text x="290" y="162" text-anchor="middle" font-family="monospace" font-size="12" fill="#FF8888">You send 0.01 SOL</text>
+  <text x="290" y="178" text-anchor="middle" font-family="monospace" font-size="10" fill="#FF4444" opacity="0.7">to compromised wallet</text>
+
+  <!-- Arrow down -->
+  <line x1="290" y1="192" x2="290" y2="228" stroke="#FF4444" stroke-width="2" marker-end="url(#arrowRed)"/>
+
+  <!-- Node: Sweeper bot -->
+  <rect x="150" y="230" width="280" height="50" rx="8" fill="#2A1000" stroke="#FF8800" stroke-width="2"/>
+  <text x="290" y="252" text-anchor="middle" font-family="monospace" font-size="13" fill="#FF8800">🤖 Sweeper bot fires</text>
+  <text x="290" y="268" text-anchor="middle" font-family="monospace" font-size="10" fill="#FF8800" opacity="0.7">reacts in &lt; 1 second</text>
+
+  <!-- Arrow down -->
+  <line x1="290" y1="282" x2="290" y2="318" stroke="#FF4444" stroke-width="2" marker-end="url(#arrowRed)"/>
+
+  <!-- Node: SOL drained -->
+  <rect x="170" y="320" width="240" height="50" rx="8" fill="#2A0A0A" stroke="#FF4444" stroke-width="1.5"/>
+  <text x="290" y="342" text-anchor="middle" font-family="monospace" font-size="12" fill="#FF6666">SOL drained instantly</text>
+  <text x="290" y="358" text-anchor="middle" font-family="monospace" font-size="10" fill="#FF4444" opacity="0.7">attacker wallet receives it</text>
+
+  <!-- Arrow down -->
+  <line x1="290" y1="372" x2="290" y2="408" stroke="#FF4444" stroke-width="2" marker-end="url(#arrowRed)"/>
+
+  <!-- Node: No fees -->
+  <rect x="170" y="410" width="240" height="50" rx="8" fill="#2A0A0A" stroke="#FF4444" stroke-width="1.5"/>
+  <text x="290" y="432" text-anchor="middle" font-family="monospace" font-size="12" fill="#FF6666">No SOL for fees</text>
+  <text x="290" y="448" text-anchor="middle" font-family="monospace" font-size="10" fill="#FF4444" opacity="0.7">transaction fails</text>
+
+  <!-- Result bad -->
+  <rect x="130" y="480" width="320" height="40" rx="8" fill="#3A0A0A" stroke="#FF4444" stroke-width="2"/>
+  <text x="290" y="505" text-anchor="middle" font-family="monospace" font-size="13" font-weight="bold" fill="#FF4444">TOKENS REMAIN TRAPPED</text>
+
+  <!-- ══ RIGHT PANEL: WITH funder (good) ══ -->
+  <rect x="650" y="75" width="520" height="460" rx="12" fill="#0A1A0A" stroke="#14F195" stroke-width="1.5" opacity="0.7"/>
+  <rect x="650" y="75" width="520" height="40" rx="12" fill="#14F195" opacity="0.1"/>
+  <text x="910" y="101" text-anchor="middle" font-family="monospace" font-size="15" font-weight="bold" fill="#14F195">✅  WITH FUNDER-PAYS PATTERN</text>
+
+  <!-- Transaction box -->
+  <rect x="680" y="130" width="460" height="320" rx="10" fill="#0A0A1A" stroke="#9945FF" stroke-width="1" opacity="0.5" stroke-dasharray="6,3"/>
+  <text x="910" y="153" text-anchor="middle" font-family="monospace" font-size="11" fill="#9945FF" opacity="0.7">── single transaction ──</text>
+
+  <!-- feePayer -->
+  <rect x="720" y="164" width="380" height="44" rx="7" fill="#150A2A" stroke="#9945FF" stroke-width="1.5"/>
+  <text x="770" y="184" font-family="monospace" font-size="11" fill="#9945FF" opacity="0.7">feePayer =</text>
+  <text x="870" y="184" font-family="monospace" font-size="12" fill="#BB77FF">funder.publicKey</text>
+  <text x="770" y="200" font-family="monospace" font-size="10" fill="#9945FF" opacity="0.5">funder pays everything, including ATA creation</text>
+
+  <!-- createATA instruction -->
+  <rect x="720" y="220" width="380" height="44" rx="7" fill="#0A150A" stroke="#14F195" stroke-width="1" opacity="0.7"/>
+  <text x="770" y="240" font-family="monospace" font-size="10" fill="#14F195" opacity="0.7">createAssociatedTokenAccount(</text>
+  <text x="790" y="256" font-family="monospace" font-size="10" fill="#88FFCC">funder, destATA, dest, mint</text>
+  <text x="770" y="256" font-family="monospace" font-size="10" fill="#14F195" opacity="0.5">  </text>
+
+  <!-- transferChecked instruction -->
+  <rect x="720" y="276" width="380" height="56" rx="7" fill="#0A150A" stroke="#14F195" stroke-width="1" opacity="0.7"/>
+  <text x="770" y="296" font-family="monospace" font-size="10" fill="#14F195" opacity="0.7">createTransferChecked(</text>
+  <text x="790" y="312" font-family="monospace" font-size="10" fill="#88FFCC">sourceATA, mint, destATA,</text>
+  <text x="790" y="326" font-family="monospace" font-size="10" fill="#88FFCC">compromised.publicKey ← signs only</text>
+
+  <!-- tx.sign -->
+  <rect x="720" y="344" width="380" height="36" rx="7" fill="#1A0A2A" stroke="#9945FF" stroke-width="1.5"/>
+  <text x="770" y="358" font-family="monospace" font-size="11" fill="#9945FF">tx.sign(</text>
+  <text x="845" y="358" font-family="monospace" font-size="11" fill="#BB77FF">funder</text>
+  <text x="912" y="358" font-family="monospace" font-size="11" fill="#9945FF">,</text>
+  <text x="925" y="358" font-family="monospace" font-size="11" fill="#88FFCC">compromised</text>
+  <text x="1046" y="358" font-family="monospace" font-size="11" fill="#9945FF">)</text>
+  <text x="770" y="372" font-family="monospace" font-size="9" fill="#666">both sign — funder pays — compromised only authorizes</text>
+
+  <!-- Key insight -->
+  <rect x="680" y="465" width="460" height="48" rx="8" fill="#0A2A0A" stroke="#14F195" stroke-width="2"/>
+  <text x="910" y="486" text-anchor="middle" font-family="monospace" font-size="12" fill="#14F195">Sweeper bot watches... nothing arrives.</text>
+  <text x="910" y="503" text-anchor="middle" font-family="monospace" font-size="11" fill="#14F195" opacity="0.7">No SOL to steal → tokens escape safely ✓</text>
+
+  <!-- Result good -->
+  <rect x="750" y="523" width="320" height="0" rx="8"/>
+
+  <!-- Divider -->
+  <line x1="590" y1="75" x2="590" y2="535" stroke="#333" stroke-width="1" stroke-dasharray="4,4"/>
+  <text x="595" y="320" font-family="monospace" font-size="11" fill="#555" transform="rotate(90, 595, 320)">vs</text>
+</svg>

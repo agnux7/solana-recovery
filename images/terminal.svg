@@ -1,0 +1,113 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 560" width="900" height="560">
+  <defs>
+    <linearGradient id="termBg" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#141414"/>
+      <stop offset="100%" style="stop-color:#0D0D0D"/>
+    </linearGradient>
+    <filter id="termGlow">
+      <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
+      <feMerge><feMergeNode in="coloredBlur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+
+  <!-- Window shadow -->
+  <rect x="8" y="8" width="884" height="544" rx="12" fill="#000000" opacity="0.5"/>
+
+  <!-- Terminal window -->
+  <rect x="0" y="0" width="884" height="544" rx="12" fill="url(#termBg)" stroke="#333" stroke-width="1"/>
+
+  <!-- Title bar -->
+  <rect x="0" y="0" width="884" height="40" rx="12" fill="#1E1E1E"/>
+  <rect x="0" y="28" width="884" height="12" fill="#1E1E1E"/>
+
+  <!-- Traffic lights -->
+  <circle cx="24" cy="20" r="7" fill="#FF5F57"/>
+  <circle cx="46" cy="20" r="7" fill="#FFBD2E"/>
+  <circle cx="68" cy="20" r="7" fill="#28C840"/>
+
+  <!-- Title bar text -->
+  <text x="442" y="25" text-anchor="middle" font-family="monospace" font-size="13" fill="#888">zsh — solana-recovery — node recover.js</text>
+
+  <!-- Terminal content -->
+  <g font-family="'Courier New', monospace" font-size="13.5">
+
+    <!-- Command prompt -->
+    <text x="24" y="72" fill="#14F195">➜</text>
+    <text x="42" y="72" fill="#9945FF">solana-recovery</text>
+    <text x="186" y="72" fill="#FFFFFF"> node recover.js</text>
+
+    <!-- Blank line -->
+
+    <!-- Header -->
+    <text x="24" y="100" fill="#FFFFFF" font-weight="bold">=== SOLANA WALLET RECOVERY ===</text>
+
+    <text x="24" y="120" fill="#666">Compromised wallet  :</text>
+    <text x="192" y="120" fill="#FF6666">2ZQL2EMi5z...SQJuXj8</text>
+
+    <text x="24" y="138" fill="#666">Funder (pays fees)  :</text>
+    <text x="192" y="138" fill="#9945FF">EXGbi2D6ZR...YSdSNn</text>
+
+    <text x="24" y="156" fill="#666">Destination         :</text>
+    <text x="192" y="156" fill="#14F195">EXGbi2D6ZR...YSdSNn</text>
+
+    <text x="24" y="174" fill="#666">Mode                :</text>
+    <text x="192" y="174" fill="#FF8800" font-weight="bold">REAL</text>
+
+    <!-- Blank -->
+
+    <text x="24" y="200" fill="#888">Funder balance:</text>
+    <text x="160" y="200" fill="#FFFFFF">0.32011 SOL</text>
+
+    <text x="24" y="220" fill="#888">Searching for tokens...</text>
+    <text x="24" y="240" fill="#FFFFFF">Tokens found:</text>
+    <text x="148" y="240" fill="#9945FF" font-weight="bold">31</text>
+
+    <!-- Token list (abbreviated) -->
+    <text x="38" y="260" fill="#555">48Dh2Qow...SjQ | </text>
+    <text x="200" y="260" fill="#888">10,587,042.09</text>
+
+    <text x="38" y="277" fill="#555">Bo2PFadN...onk | </text>
+    <text x="200" y="277" fill="#888">1,431,278.87</text>
+
+    <text x="38" y="294" fill="#555">HtrmuNs4...pump | </text>
+    <text x="200" y="294" fill="#888">20,000</text>
+
+    <text x="38" y="311" fill="#555">... 28 more tokens ...</text>
+
+    <!-- Checking ATAs -->
+    <text x="24" y="333" fill="#888">Checking destination ATAs...</text>
+    <text x="24" y="351" fill="#666">  Existing ATAs:</text>
+    <text x="162" y="351" fill="#FFFFFF">0</text>
+    <text x="176" y="351" fill="#666"> | To create:</text>
+    <text x="278" y="351" fill="#FF8800">31</text>
+
+    <!-- Batch results -->
+    <text x="24" y="375" fill="#666">  [1/8] Sending 4 tokens...</text>
+    <text x="258" y="375" fill="#14F195" filter="url(#termGlow)">✓ 4Sd5AwRsr1GXbaab...</text>
+
+    <text x="24" y="393" fill="#666">  [2/8] Sending 4 tokens...</text>
+    <text x="258" y="393" fill="#14F195" filter="url(#termGlow)">✓ 5939cJCs7Uwkc6CU...</text>
+
+    <text x="24" y="411" fill="#666">  [3/8] Sending 4 tokens...</text>
+    <text x="258" y="411" fill="#14F195" filter="url(#termGlow)">✓ 5SobH24JvhLTioU7...</text>
+
+    <text x="24" y="429" fill="#666">  [4/8] Sending 4 tokens...</text>
+    <text x="258" y="429" fill="#14F195" filter="url(#termGlow)">✓ 5uNtSS2LVoju5pAY...</text>
+
+    <text x="24" y="447" fill="#666">  ...</text>
+
+    <text x="24" y="465" fill="#666">  [8/8] Sending 3 tokens...</text>
+    <text x="258" y="465" fill="#14F195" filter="url(#termGlow)">✓ 2ZKSV1mQmoBgQzVA...</text>
+
+    <!-- Final result -->
+    <text x="24" y="493" fill="#14F195" font-weight="bold" font-size="15" filter="url(#termGlow)">✓ Complete: 31/31 tokens moved.</text>
+
+    <!-- Warning -->
+    <text x="24" y="516" fill="#FF8800">  ⚠️  Delete this file when done (it contains your private keys).</text>
+
+    <!-- Cursor -->
+    <rect x="24" y="526" width="9" height="14" fill="#14F195" opacity="0.8">
+      <animate attributeName="opacity" values="0.8;0;0.8" dur="1.2s" repeatCount="indefinite"/>
+    </rect>
+  </g>
+</svg>
