@@ -1,95 +1,95 @@
-# Solana Token Recovery — Guía Completa
+# Solana Token Recovery — Complete Guide
 
-Recuperación de tokens SPL/Token-2022 desde una wallet comprometida con sweeper bot activo, sin enviar SOL a la wallet comprometida.
+Recover SPL/Token-2022 tokens from a compromised wallet with an active sweeper bot, without ever sending SOL to the compromised wallet.
 
 ---
 
-## El Problema
+## The Problem
 
-### Situación inicial
-- Wallet comprometida: `<COMPROMISED_WALLET>`
-- Causa: clic en enlace de phishing → firma de transacción maliciosa
-- El atacante instaló un **sweeper bot**: un script que monitorea la wallet comprometida 24/7 y drena cualquier SOL que llegue en cuestión de segundos, antes de que pueda usarse para pagar fees
-- Contenido a rescatar: 103 tokens meme (~$300 USD)
-- Destino: nueva wallet limpia `<DESTINATION_WALLET>`
+### Initial situation
+- Compromised wallet: `<COMPROMISED_WALLET>`
+- Cause: clicked a phishing link → signed a malicious transaction
+- The attacker installed a **sweeper bot**: a script that monitors the compromised wallet 24/7 and drains any incoming SOL within seconds, before it can be used to pay fees
+- Assets to recover: 103 meme tokens (~$300 USD)
+- Destination: new clean wallet `<DESTINATION_WALLET>`
 
-### Por qué no funcionaron las soluciones obvias
+### Why the obvious solutions didn't work
 
-| Intento | Resultado | Motivo |
+| Attempt | Result | Reason |
 |---|---|---|
-| Phantom → "Send" | "Unable to send" | Sin SOL para fees |
-| Enviar 0.01 SOL desde otra wallet | Bot lo drena antes de poder usarlo | Sweeper bot reacciona en <1s |
-| Jito Bundles (atomic) | Aceptados pero nunca aterrizaban | Simulación fallaba: wallet comprometida sin SOL al momento de simular |
+| Phantom → "Send" | "Unable to send" | No SOL for fees |
+| Send 0.01 SOL from another wallet | Bot drains it before it can be used | Sweeper bot reacts in <1s |
+| Jito Bundles (atomic) | Accepted but never landed | Simulation failed: compromised wallet had no SOL at simulation time |
 
 ---
 
-## La Solución: Patrón "Funder Paga Todo"
+## The Solution: Funder Pays Everything Pattern
 
-### Concepto clave
+### Core concept
 
-En Solana, `feePayer` y el firmante de la instrucción pueden ser **wallets distintas**. Esto permite:
+In Solana, `feePayer` and the instruction signer can be **different wallets**. This allows:
 
-1. Una wallet **funder** (limpia, con SOL) actúa como `feePayer` de la transacción completa
-2. La wallet **comprometida** solo firma como autoridad de la transferencia de tokens (no necesita SOL)
-3. El sweeper bot nunca recibe SOL para robar → no puede interferir
+1. A **funder** wallet (clean, with SOL) acts as `feePayer` for the entire transaction
+2. The **compromised** wallet only signs as the token transfer authority (needs no SOL)
+3. The sweeper bot never receives SOL to steal → it can't interfere
 
 ```
-Funder  ──paga fees──→  Red Solana
+Funder  ──pays fees──→  Solana network
                               ↑
-Comprometida ──firma transfer→ tokens van a Destino
+Compromised ──signs transfer→ tokens go to Destination
 ```
 
-### Arquitectura de cada transacción
+### Transaction structure per batch
 
 ```
-tx.feePayer = funder.publicKey          // funder paga TODO
+tx.feePayer = funder.publicKey          // funder pays EVERYTHING
 
-// Priority fee para confirmar rápido
+// Priority fee to confirm fast
 ComputeBudgetProgram.setComputeUnitPrice({ microLamports: 200_000 })
 ComputeBudgetProgram.setComputeUnitLimit({ units: 400_000 })
 
-// Por cada token en el batch (hasta 4):
+// For each token in the batch (up to 4):
 createAssociatedTokenAccountInstruction(
-  funder.publicKey,  // funder paga la creación del ATA (~0.00204 SOL c/u)
+  funder.publicKey,  // funder pays ATA creation (~0.00204 SOL each)
   destATA, dest, mint, programId
 )
 createTransferCheckedInstruction(
   sourceATA, mint, destATA,
-  compromised.publicKey,  // comprometida solo autoriza
+  compromised.publicKey,  // compromised only authorizes
   amount, decimals, [], programId
 )
 
-// Ambas wallets firman
+// Both wallets sign
 tx.sign(funder, compromised)
 ```
 
 ---
 
-## Detalles Técnicos
+## Technical Details
 
-### Costo por token recuperado
-- Creación de ATA destino: ~0.00204 SOL
-- Fee de transacción + priority fee: ~0.001 SOL por tx
-- Con 4 tokens por tx: ~0.009–0.01 SOL por batch
-- **103 tokens totales: ~0.26 SOL en total**
+### Cost per recovered token
+- Destination ATA creation: ~0.00204 SOL
+- Transaction fee + priority fee: ~0.001 SOL per tx
+- With 4 tokens per tx: ~0.009–0.01 SOL per batch
+- **103 tokens total: ~0.26 SOL**
 
-### Batching (4 tokens por transacción)
-Solana tiene un límite de tamaño de transacción (~1232 bytes). Con 4 tokens por tx se evita:
-- Exceder el límite de tamaño
-- Agotar el compute budget
-- Gastar demasiado SOL en un solo intento
+### Batching (4 tokens per transaction)
+Solana has a transaction size limit (~1232 bytes). With 4 tokens per tx you avoid:
+- Exceeding the size limit
+- Exhausting the compute budget
+- Spending too much SOL in a single attempt
 
-### Soporte Token-2022
-El script detecta y maneja ambos programas de token:
-- `TOKEN_PROGRAM_ID` — tokens SPL clásicos
-- `TOKEN_2022_PROGRAM_ID` — tokens con extensiones (transfer fees, etc.)
+### Token-2022 support
+The script detects and handles both token programs:
+- `TOKEN_PROGRAM_ID` — classic SPL tokens
+- `TOKEN_2022_PROGRAM_ID` — tokens with extensions (transfer fees, etc.)
 
-Se pasa `programId` explícitamente a `createAssociatedTokenAccountInstruction` y `createTransferCheckedInstruction`.
+`programId` is passed explicitly to `createAssociatedTokenAccountInstruction` and `createTransferCheckedInstruction`.
 
-### Verificación eficiente de ATAs
-En lugar de 103 llamadas RPC individuales:
+### Efficient ATA verification
+Instead of 103 individual RPC calls:
 ```js
-// 1–2 llamadas en lugar de 103
+// 1–2 calls instead of 103
 const ataInfos = [];
 for (let i = 0; i < prepared.length; i += 100) {
   const infos = await conn.getMultipleAccountsInfo(
@@ -99,48 +99,48 @@ for (let i = 0; i < prepared.length; i += 100) {
 }
 ```
 
-### Re-ejecución segura (idempotencia)
-El script filtra tokens con `balance > 0n`. Al re-correrlo después de un fallo parcial, solo procesa los tokens que aún no se han transferido.
+### Safe re-runs (idempotency)
+The script filters tokens with `balance > 0n`. Re-running after a partial failure only processes tokens that haven't been transferred yet.
 
 ---
 
-## Errores Encontrados y Soluciones
+## Errors and Fixes
 
 ### `rpc-websockets` module not found (Node 25+)
 ```
 Error: Cannot find module 'rpc-websockets'
 ```
-**Fix:** Pinear versión compatible en `package.json`:
+**Fix:** Pin the compatible version in `package.json`:
 ```json
 "rpc-websockets": "7.6.1"
 ```
 
 ### "bad secret key size" (38 bytes)
-La private key se copió truncada. El error correcto:
+The private key was copied truncated. Clear error message:
 ```
-Tamaño de private key inválido: 38 bytes (esperado 64 o 32)
+Invalid private key size: 38 bytes (expected 64 or 32)
 ```
-**Fix:** Volver a copiar la private key completa desde la wallet (~88 caracteres en base58).
+**Fix:** Re-copy the full private key from the wallet (~88 base58 characters).
 
-### "custom program error: 0x1" en Instrucción N
-El funder se quedó sin SOL a mitad de la ejecución.
+### "custom program error: 0x1" at Instruction N
+The funder ran out of SOL mid-run.
 ```
 Error: custom program error: 0x1
 ```
-**Fix:** Recargar el funder con 0.05+ SOL y volver a correr el script. Los tokens ya transferidos se saltan automáticamente.
+**Fix:** Recharge the funder with 0.05+ SOL and re-run the script. Already-transferred tokens are automatically skipped.
 
-### Jito bundles aceptados pero sin aterrizaje
-Los bundles se aceptaban (`bundle accepted`) pero nunca confirmaban. Causa probable: Jito simula las transacciones del bundle de forma independiente; la wallet comprometida sin SOL falla la simulación.
-**Fix:** Abandonar Jito. El patrón estándar con funder como feePayer funciona sin necesidad de bundles atómicos porque el sweeper bot no puede robar si nunca recibe SOL.
+### Jito bundles accepted but not landing
+Bundles were accepted (`bundle accepted`) but never confirmed. Likely cause: Jito simulates bundle transactions independently; the compromised wallet with no SOL fails simulation.
+**Fix:** Abandon Jito. The standard funder-as-feePayer pattern works without atomic bundles because the sweeper bot can't steal what it never receives.
 
 ---
 
-## El Script
+## The Script
 
 ```javascript
-// recover.js — Recuperación de tokens Solana
-// El funder paga todos los fees directamente: no se envía SOL al compromised wallet,
-// así el sweeper bot no tiene nada que robar.
+// recover.js — Solana token recovery
+// The funder pays all fees directly: no SOL is ever sent to the compromised wallet,
+// so the sweeper bot has nothing to steal.
 
 const {
   Connection, Keypair, PublicKey, Transaction,
@@ -167,23 +167,23 @@ function keypairFromPrivateKey(privateKeyBase58) {
   const decoded = bs58.decode(privateKeyBase58);
   if (decoded.length === 64) return Keypair.fromSecretKey(decoded);
   if (decoded.length === 32) return Keypair.fromSeed(decoded);
-  throw new Error(`Tamaño de private key inválido: ${decoded.length} bytes (esperado 64 o 32).`);
+  throw new Error(`Invalid private key size: ${decoded.length} bytes (expected 64 or 32).`);
 }
 
 const CONFIG = {
-  // Private key de tu wallet COMPROMETIDA (base58, ~88 caracteres)
-  compromisedKey: 'TU_PRIVATE_KEY_COMPROMETIDA_AQUI',
+  // Private key of your COMPROMISED wallet (base58, ~88 characters)
+  compromisedKey: 'YOUR_COMPROMISED_PRIVATE_KEY_HERE',
 
-  // Private key de tu wallet FONDEADORA (wallet limpia con al menos 0.05 SOL)
-  funderKey: 'TU_PRIVATE_KEY_FUNDER_AQUI',
+  // Private key of your FUNDER wallet (clean wallet with at least 0.05 SOL)
+  funderKey: 'YOUR_FUNDER_PRIVATE_KEY_HERE',
 
-  // Dirección pública de tu NUEVA wallet destino
-  destination: 'TU_WALLET_DESTINO_AQUI',
+  // Public address of your NEW destination wallet
+  destination: 'YOUR_DESTINATION_WALLET_HERE',
 
-  // Tokens a procesar por transacción (no subas de 5)
+  // Tokens to process per transaction (don't go above 5)
   tokensPerTx: 4,
 
-  // true = solo simulación, false = ejecutar de verdad
+  // true = simulation only, false = execute for real
   dryRun: true,
 };
 
@@ -196,18 +196,18 @@ async function main() {
   const dest        = new PublicKey(CONFIG.destination);
 
   console.log('\n=== SOLANA WALLET RECOVERY ===');
-  console.log('Wallet comprometida :', compromised.publicKey.toBase58());
-  console.log('Funder (paga fees)  :', funder.publicKey.toBase58());
-  console.log('Destino             :', CONFIG.destination);
-  console.log('Modo                :', CONFIG.dryRun ? 'DRY RUN (simulación)' : 'REAL');
+  console.log('Compromised wallet  :', compromised.publicKey.toBase58());
+  console.log('Funder (pays fees)  :', funder.publicKey.toBase58());
+  console.log('Destination         :', CONFIG.destination);
+  console.log('Mode                :', CONFIG.dryRun ? 'DRY RUN (simulation)' : 'REAL');
 
   const funderBal = await conn.getBalance(funder.publicKey);
-  console.log(`Balance funder: ${(funderBal / LAMPORTS_PER_SOL).toFixed(5)} SOL`);
+  console.log(`Funder balance: ${(funderBal / LAMPORTS_PER_SOL).toFixed(5)} SOL`);
   if (funderBal < 0.01 * LAMPORTS_PER_SOL) {
-    throw new Error('El funder necesita al menos 0.01 SOL.');
+    throw new Error('Funder needs at least 0.01 SOL.');
   }
 
-  console.log('Buscando tokens...');
+  console.log('Searching for tokens...');
   const [splRes, t22Res] = await Promise.all([
     conn.getParsedTokenAccountsByOwner(compromised.publicKey, { programId: TOKEN_PROGRAM_ID }),
     conn.getParsedTokenAccountsByOwner(compromised.publicKey, { programId: TOKEN_2022_PROGRAM_ID }),
@@ -219,22 +219,22 @@ async function main() {
   ].filter(a => BigInt(a.account.data.parsed.info.tokenAmount.amount) > 0n);
 
   if (tokens.length === 0) {
-    console.log('No hay tokens con balance > 0.');
+    console.log('No tokens with balance > 0.');
     return;
   }
 
-  console.log(`Tokens encontrados: ${tokens.length}`);
+  console.log(`Tokens found: ${tokens.length}`);
   for (const t of tokens) {
     const i = t.account.data.parsed.info;
     console.log(`  ${i.mint} | ${i.tokenAmount.uiAmountString}`);
   }
 
   if (CONFIG.dryRun) {
-    console.log('\n✓ DRY RUN completado. Cambia dryRun a false para ejecutar.');
+    console.log('\n✓ DRY RUN complete. Set dryRun to false to execute for real.');
     return;
   }
 
-  console.log('\nVerificando ATAs destino...');
+  console.log('\nChecking destination ATAs...');
   const prepared = tokens.map(t => {
     const info    = t.account.data.parsed.info;
     const mint    = new PublicKey(info.mint);
@@ -250,7 +250,7 @@ async function main() {
 
   const tokenData = prepared.map((t, i) => ({ ...t, needsCreate: !ataInfos[i] }));
   const newATAs = tokenData.filter(t => t.needsCreate).length;
-  console.log(`  ATAs existentes: ${tokenData.length - newATAs} | Por crear: ${newATAs}`);
+  console.log(`  Existing ATAs: ${tokenData.length - newATAs} | To create: ${newATAs}`);
 
   let totalMoved = 0;
   for (let i = 0; i < tokenData.length; i += CONFIG.tokensPerTx) {
@@ -283,7 +283,7 @@ async function main() {
     tx.sign(funder, compromised);
 
     try {
-      process.stdout.write(`  [${batchNum}/${totalBatches}] Enviando ${batch.length} tokens... `);
+      process.stdout.write(`  [${batchNum}/${totalBatches}] Sending ${batch.length} tokens... `);
       const sig = await conn.sendRawTransaction(tx.serialize(), { skipPreflight: false, maxRetries: 3 });
       await conn.confirmTransaction(sig, 'confirmed');
       totalMoved += batch.length;
@@ -297,97 +297,97 @@ async function main() {
     }
   }
 
-  console.log(`\n✓ Completado: ${totalMoved}/${tokenData.length} tokens movidos.`);
+  console.log(`\n✓ Complete: ${totalMoved}/${tokenData.length} tokens moved.`);
   if (totalMoved < tokenData.length) {
-    console.log('  Algunos batches fallaron. Corre el script de nuevo para intentar los restantes.');
+    console.log('  Some batches failed. Re-run the script to retry the remaining ones.');
   }
-  console.log('  ⚠️  Borra este archivo cuando termines (contiene tus private keys).');
+  console.log('  ⚠️  Delete this file when done (it contains your private keys).');
 }
 
 main().catch(err => {
-  console.error('\n✗ Error fatal:', err.message);
+  console.error('\n✗ Fatal error:', err.message);
   process.exit(1);
 });
 ```
 
 ---
 
-## Uso
+## Usage
 
-### 1. Instalar dependencias
+### 1. Install dependencies
 ```bash
 npm install
 ```
 
-### 2. Configurar `recover.js`
-Edita la sección `CONFIG`:
+### 2. Configure `recover.js`
+Edit the `CONFIG` section:
 ```js
 const CONFIG = {
-  compromisedKey: 'TU_PRIVATE_KEY_COMPROMETIDA',  // base58, ~88 chars
-  funderKey:      'TU_PRIVATE_KEY_FUNDER',         // wallet limpia con SOL
-  destination:    'TU_WALLET_DESTINO',             // dirección pública
+  compromisedKey: 'YOUR_COMPROMISED_PRIVATE_KEY',  // base58, ~88 chars
+  funderKey:      'YOUR_FUNDER_PRIVATE_KEY',        // clean wallet with SOL
+  destination:    'YOUR_DESTINATION_ADDRESS',       // public address
   tokensPerTx:    4,
-  dryRun:         true,  // empieza en true para verificar
+  dryRun:         true,  // start with true to verify
 };
 ```
 
-### 3. Dry run primero
+### 3. Dry run first
 ```bash
 node recover.js
-# Verifica que las wallets sean las correctas
+# Verify the wallet addresses are correct
 ```
 
-### 4. Ejecutar real
-Cambia `dryRun: false` y corre de nuevo:
+### 4. Execute for real
+Set `dryRun: false` and run again:
 ```bash
 node recover.js
 ```
 
-### 5. Si el funder se queda sin SOL
-El script reporta los batches que fallaron. Recarga el funder y vuelve a correr — los tokens ya transferidos se saltan automáticamente.
+### 5. If the funder runs out of SOL
+The script reports which batches failed. Recharge the funder and re-run — already-transferred tokens are skipped automatically.
 
-### 6. Al terminar
+### 6. When done
 ```bash
-rm recover.js  # contiene tus private keys
+rm recover.js  # contains your private keys
 ```
 
 ---
 
-## Cuánto SOL necesita el funder
+## How much SOL does the funder need?
 
-| Tokens a recuperar | SOL estimado |
+| Tokens to recover | Estimated SOL |
 |---|---|
 | 10 | ~0.03 SOL |
 | 25 | ~0.07 SOL |
 | 50 | ~0.13 SOL |
 | 100 | ~0.26 SOL |
 
-Siempre ten un 20% extra de margen por variación en priority fees.
+Always keep a 20% buffer for priority fee variance.
 
 ---
 
-## Resultado Final
+## Final Result
 
-| Métrica | Valor |
+| Metric | Value |
 |---|---|
-| Tokens recuperados | 103/103 |
-| SOL gastado (fees + ATAs) | ~0.40 SOL total |
-| Tiempo total | ~3 horas (incluyendo debugging) |
-| Runs necesarios | 3 (funder se agotó 2 veces) |
+| Tokens recovered | 103/103 |
+| SOL spent (fees + ATAs) | ~0.40 SOL total |
+| Total time | ~3 hours (including debugging) |
+| Runs needed | 3 (funder ran out of SOL twice) |
 
 ---
 
-## Lecciones
+## Lessons
 
-1. **Nunca firmes transacciones de sitios desconocidos.** Una sola firma puede dar acceso total a tu wallet.
-2. **El sweeper bot no puede robarte SOL que nunca llega.** El patrón funder-paga-todo es la solución correcta.
-3. **Mueve tus tokens antes de que el atacante los drene.** Los tokens SPL no se roban automáticamente como el SOL — hay una ventana de tiempo.
-4. **Ten siempre una wallet funder separada con algo de SOL** para emergencias como esta.
-5. **Jito Bundles no son necesarios** si el diseño de la transacción nunca le da SOL al sweeper bot.
+1. **Never sign transactions from unknown sites.** A single signature can hand over full wallet control.
+2. **The sweeper bot can't steal SOL that never arrives.** The funder-pays pattern is the correct solution.
+3. **Move your tokens before the attacker drains them.** SPL tokens aren't auto-swept like SOL — there's a time window.
+4. **Keep a separate funder wallet with some SOL** for emergencies like this.
+5. **Jito Bundles aren't necessary** if your transaction design never gives SOL to the sweeper bot.
 
 ---
 
-## Dependencias
+## Dependencies
 
 ```json
 {
@@ -400,4 +400,4 @@ Siempre ten un 20% extra de margen por variación en priority fees.
 }
 ```
 
-> `rpc-websockets` debe pinarse en `7.6.1` — versiones más nuevas tienen un formato incompatible con `@solana/web3.js` 1.91.8 en Node 20+.
+> `rpc-websockets` must be pinned to `7.6.1` — newer versions have an incompatible format with `@solana/web3.js` 1.91.8 on Node 20+.
